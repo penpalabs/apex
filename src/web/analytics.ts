@@ -1,24 +1,44 @@
-// Cookieless analytics for Apex, a static SPA hosted on GitHub Pages. Every provider is loaded as a plain
-// <script> beacon (no cookies, no localStorage, no proxy, no consent banner). The app never changes the URL when
-// you switch sections, so per-section popularity is tracked by firing a VIRTUAL PAGEVIEW on each section change
-// (GoatCounter and Umami support this via their JS API). Cloudflare's free Web Analytics beacon records real
-// navigations only, so it captures visits/referrers/geo but not per-section.
+// Cookieless analytics for Apex, a static SPA deployed to GitHub Pages (under /apex/) and Cloudflare Workers static
+// assets (at the root). Every provider is loaded as a plain <script> beacon (no cookies, no localStorage, no proxy,
+// no consent banner). The app never changes the URL when you switch sections, so per-section popularity is tracked
+// by firing a VIRTUAL PAGEVIEW on each section change (GoatCounter and Umami support this via their JS API).
+// Cloudflare's free Web Analytics beacon records real navigations only, so it captures visits/referrers/geo but
+// not per-section.
 //
 // The IDs below are PUBLIC embed tokens — they ship in the page source no matter what, so committing them is
 // fine (they are NOT secrets). Leave a field '' to disable that provider; nothing is loaded or sent while it is
-// empty. Fill these in after creating each free account:
+// empty. Where each one comes from:
 //   • Cloudflare Web Analytics → dash.cloudflare.com → Analytics & Logs → Web Analytics → add site → copy the
 //       token from the <script> snippet (the "token" field).
 //   • GoatCounter → <yourcode>.goatcounter.com → the count URL, e.g. https://apex.goatcounter.com/count
 //   • Umami Cloud → cloud.umami.is → your website → Settings → "Website ID" (a UUID).
-
-
+//
+// Beacons load only on the hostnames in `hosts`, so `npm run dev`, `vite preview`, and forks deployed to their own
+// domains never write into these dashboards. Add a hostname here when the site gets a new public address.
 const CONFIG = {
+  hosts: ['pen-pal.github.io', 'penpalabs.github.io'],
   cloudflareToken: 'a0a798d78ef541c495ebb87f47cb67da', // Cloudflare Web Analytics beacon (public, write-only)
   goatcounter: 'https://apex.goatcounter.com/count',    // GoatCounter count endpoint
   umamiWebsiteId: '978cf230-088c-4322-8827-5cffa2744f24', // Umami Cloud website id (public embed id)
   umamiSrc: 'https://cloud.umami.is/script.js',
 };
+
+/** Whether beacons may load on this hostname. Exact match only: a fork's `someone.github.io` must not qualify. */
+export function isTrackedHost(hostname: string, hosts: readonly string[] = CONFIG.hosts): boolean {
+  return hosts.includes(hostname.toLowerCase());
+}
+
+/** Seconds → coarse bucket, so dwell events stay low-cardinality in every dashboard. */
+export function dwellBucket(seconds: number): string {
+  return seconds < 5 ? '<5s' : seconds < 15 ? '5-15s' : seconds < 60 ? '15-60s' : seconds < 300 ? '1-5m' : '5m+';
+}
+
+/** GoatCounter has no event properties — only a path — so the section (and bucket) go into the path itself.
+ *  Without this every dwell/engaged event collapses into one row and says nothing about which section. */
+export function goatcounterEventPath(name: string, data: Record<string, unknown>): string {
+  const parts = ['event', name, data.section, data.bucket].filter((p) => p !== undefined && p !== '');
+  return parts.map((p) => encodeURIComponent(String(p))).join('/');
+}
 
 function inject(src: string, attrs: Record<string, string>, opts: { async?: boolean; defer?: boolean } = {}): void {
   const s = document.createElement('script');
@@ -31,10 +51,12 @@ function inject(src: string, attrs: Record<string, string>, opts: { async?: bool
 
 let started = false;
 
-/** Load whichever provider beacons are configured. Idempotent; a no-op for any provider left empty. */
+/** Load whichever provider beacons are configured. Idempotent; a no-op for any provider left empty, and for any
+ *  host not in CONFIG.hosts (the track* functions below then find no provider globals and send nothing). */
 export function initAnalytics(): void {
   if (started || typeof document === 'undefined') return;
   started = true;
+  if (!isTrackedHost(window.location.hostname)) return;
   if (CONFIG.cloudflareToken)
     inject('https://static.cloudflareinsights.com/beacon.min.js',
       { 'data-cf-beacon': JSON.stringify({ token: CONFIG.cloudflareToken, spa: true }) }, { defer: true });
@@ -65,14 +87,13 @@ function trackEvent(name: string, data: Record<string, unknown>): void {
     goatcounter?: { count?: (o: { path: string; title: string; event: boolean }) => void };
   };
   try { if (typeof w.umami?.track === 'function') w.umami.track(name, data); } catch { /* not loaded */ }
-  try { w.goatcounter?.count?.({ path: `event/${name}`, title: name, event: true }); } catch { /* not loaded */ }
+  try { w.goatcounter?.count?.({ path: goatcounterEventPath(name, data), title: name, event: true }); } catch { /* not loaded */ }
 }
 
 /** How long a user spent on a section, bucketed to keep event cardinality low. One event per section visit. */
 export function trackDwell(id: string, seconds: number): void {
   if (seconds < 2) return; // ignore fly-bys / accidental opens
-  const bucket = seconds < 5 ? '<5s' : seconds < 15 ? '5-15s' : seconds < 60 ? '15-60s' : seconds < 300 ? '1-5m' : '5m+';
-  trackEvent('dwell', { section: id, seconds: Math.round(seconds), bucket });
+  trackEvent('dwell', { section: id, seconds: Math.round(seconds), bucket: dwellBucket(seconds) });
 }
 
 const engaged = new Set<string>();

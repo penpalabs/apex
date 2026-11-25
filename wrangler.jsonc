@@ -1,0 +1,11 @@
+// Cloudflare Workers static-assets deploy. Workers Builds (Git integration) runs `npm run build` then
+// `npx wrangler deploy`; vite.config.ts builds with base '/' there because Workers Builds sets WORKERS_CI=1.
+// There is no Worker script: Cloudflare serves the files in dist/ directly.
+{
+  "$schema": "https://unpkg.com/wrangler/config-schema.json",
+  "name": "apex",
+  "compatibility_date": "2026-11-26",
+  "assets": {
+    "directory": "./dist"
+  }
+}

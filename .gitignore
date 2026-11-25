@@ -11,3 +11,4 @@ d.html
 # local staging for the anti-slop toolkit (now integrated into scripts/.githooks/AGENTS.md)
 all/
 all2/
+.wrangler
