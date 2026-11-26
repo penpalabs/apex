@@ -118,7 +118,7 @@ export function OverviewSection({ onPick, onStartPath, current }: { onPick: (id:
           </h1>
           <p className="ov-lede">
             Not another wiki. Each of the {total} sections is a <strong>live simulation</strong> in your browser — real bytes,
-            real checksums, honest crypto, every model checked against an independent reference. Wire it up, press go, and watch
+            real checksums, honest crypto, and a test suite behind every model. Wire it up, press go, and watch
             the mechanics move. New here? Take a guided journey below; after something specific? Search or pick an area above.
           </p>
         </div>
@@ -126,9 +126,9 @@ export function OverviewSection({ onPick, onStartPath, current }: { onPick: (id:
       </div>
       <div className="ov-feats">
         {([
-          ['01', 'Validated', 'Every model is checked against an independent source — an RFC, a FIPS/NIST test vector, or a reference implementation.'],
+          ['01', 'Tested', 'Every model has tests: against an RFC, a FIPS/NIST test vector or a reference implementation where one exists, and against invariants where none does.'],
           ['02', 'In-browser', 'The simulator is the page. No downloads, no accounts, no server round-trip.'],
-          ['03', 'Cinematic', 'Sections auto-play their mechanism — a moving picture, not a static diagram.'],
+          ['03', 'Cinematic', 'Many sections auto-play their mechanism — a moving picture, not a static diagram.'],
           ['04', 'Offline', 'Fully static, no backend. Once loaded it runs on a plane, in a lab, behind an airgap.'],
         ] as const).map(([n, t, d]) => (
           <div className="ov-feat" key={n}>

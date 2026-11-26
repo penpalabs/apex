@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { SECTION_META, GROUPS, groupOf, metaById } from '../src/web/sections';
+import { SECTION_META, GROUPS, groupOf, metaById, pathOf, sectionFromPath } from '../src/web/sections';
 
 describe('sidebar taxonomy', () => {
   it('every section belongs to exactly one group', () => {
@@ -27,5 +27,23 @@ describe('sidebar taxonomy', () => {
     expect(groupOf('crypto')).toBe('Cryptography');
     expect(groupOf('certs')).toBe('Security & web');
     expect(groupOf('nonexistent')).toBeNull();
+  });
+});
+
+describe('section URLs', () => {
+  it('maps paths under either deploy base to the section, tolerating a missing trailing slash', () => {
+    expect(sectionFromPath('/raft/', '/')).toBe('raft');
+    expect(sectionFromPath('/apex/raft/', '/apex/')).toBe('raft');
+    expect(sectionFromPath('/apex/raft', '/apex/')).toBe('raft');
+    expect(pathOf('raft', '/apex/')).toBe('/apex/raft/');
+  });
+  it('sends the base path, unknown ids, and paths outside the base to the overview', () => {
+    for (const [p, base] of [['/', '/'], ['/apex/', '/apex/'], ['/nope/', '/'], ['/raft/', '/apex/'], ['/raft/x/', '/']]) {
+      expect(sectionFromPath(p, base), p).toBe('overview');
+    }
+    expect(pathOf('overview', '/apex/')).toBe('/apex/');
+  });
+  it('every section round-trips through its URL', () => {
+    for (const { id } of SECTION_META) expect(sectionFromPath(pathOf(id, '/apex/'), '/apex/')).toBe(id);
   });
 });

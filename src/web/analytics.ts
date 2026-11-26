@@ -1,9 +1,10 @@
+import { pathOf } from "./sections";
+
 // Cookieless analytics for Apex, a static SPA deployed to GitHub Pages (under /apex/) and Cloudflare Workers static
 // assets (at the root). Every provider is loaded as a plain <script> beacon (no cookies, no localStorage, no proxy,
-// no consent banner). The app never changes the URL when you switch sections, so per-section popularity is tracked
-// by firing a VIRTUAL PAGEVIEW on each section change (GoatCounter and Umami support this via their JS API).
-// Cloudflare's free Web Analytics beacon records real navigations only, so it captures visits/referrers/geo but
-// not per-section.
+// no consent banner). Each section has its own URL and the app pushState()s to it on every section change.
+// Umami and Cloudflare (`spa: true`) record those history changes as pageviews themselves; GoatCounter counts only
+// the landing page, so trackSection() sends it the later ones.
 //
 // The IDs below are PUBLIC embed tokens — they ship in the page source no matter what, so committing them is
 // fine (they are NOT secrets). Leave a field '' to disable that provider; nothing is loaded or sent while it is
@@ -102,32 +103,20 @@ export function initAnalytics(): void {
     );
 }
 
-/** Record a virtual pageview for the opened section across the configured providers. Safe before scripts load. */
+/** GoatCounter pageview for a section opened after landing (see the header comment). Safe before scripts load. */
 export function trackSection(id: string): void {
   if (typeof window === "undefined") return;
   const base =
     (import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL || "/"; // '/apex/' on GitHub Pages
-  const path = `${base}${id}`;
   const w = window as unknown as {
     goatcounter?: {
       count?: (o: { path: string; title: string; event: boolean }) => void;
     };
-    umami?: {
-      track?: (
-        fn: (props: Record<string, unknown>) => Record<string, unknown>,
-      ) => void;
-    };
   };
   try {
-    w.goatcounter?.count?.({ path, title: id, event: false });
+    w.goatcounter?.count?.({ path: pathOf(id, base), title: id, event: false });
   } catch {
-    /* not loaded yet */
-  }
-  try {
-    if (typeof w.umami?.track === "function")
-      w.umami.track((props) => ({ ...props, url: path }));
-  } catch {
-    /* not loaded yet */
+    /* not loaded yet: its own landing pageview covers this one */
   }
 }
 

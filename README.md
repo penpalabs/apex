@@ -11,7 +11,7 @@ Not static diagrams you have to synchronize in your head. Real bytes, real check
 
 <br>
 
-[![Live demo](https://img.shields.io/badge/▶_Live_demo-pen--pal.github.io%2Fapex-2563eb?style=for-the-badge)](https://pen-pal.github.io/apex)
+[![Live demo](https://img.shields.io/badge/▶_Live_demo-apex.manishkhadka.info.np-2563eb?style=for-the-badge)](https://apex.manishkhadka.info.np)
 
 [![tests](https://github.com/pen-pal/apex/actions/workflows/test.yml/badge.svg)](https://github.com/pen-pal/apex/actions/workflows/test.yml)
 [![Sections](https://img.shields.io/badge/sections-497-8250df?style=flat-square)](#whats-inside)
@@ -22,7 +22,7 @@ Not static diagrams you have to synchronize in your head. Real bytes, real check
 
 <br>
 
-<a href="https://pen-pal.github.io/apex"><img src="docs/img/hero.png" alt="Apex — a live, interactive way to see how computers work" width="900"></a>
+<a href="https://apex.manishkhadka.info.np/"><img src="public/og.png" alt="Apex — a live, interactive way to see how computers work" width="900"></a>
 
 </div>
 
