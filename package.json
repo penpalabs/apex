@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "description": "A live, interactive way to see how computers actually work \u2014 497 tested visualizations across networking, cryptography, distributed systems, databases, algorithms, hardware, and OS internals. Real bytes, real checksums, real crypto.",
-  "homepage": "https://pen-pal.github.io/apex",
+  "homepage": "https://apex.manishkhadka.info.np/",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && tsx scripts/prerender.ts",
     "preview": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",

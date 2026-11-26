@@ -1,5 +1,10 @@
 // GENERATED section registry chunk 4 — see sections/registry.tsx. One data row per section: title, sub, component.
 import type { SectionEntry } from './registry';
+import { AesRoundSection } from '../AesRoundSection';
+import { HashInternalsSection } from '../HashInternalsSection';
+import { CertChainSection } from '../CertChainSection';
+import { IcmpSection } from '../IcmpSection';
+import { DhMitmSection } from '../DhMitmSection';
 import { QueueingSection } from '../QueueingSection';
 import { RtoSection } from '../RtoSection';
 import { DistanceVectorSection } from '../DistanceVectorSection';
@@ -114,4 +119,9 @@ export const chunk4: Record<string, SectionEntry> = {
   "arith": { Component: ArithSection, title: <>Arithmetic coding</>, sub: <>How to beat Huffman’s one-whole-bit-per-symbol floor: encode the entire message as a single number in [0,1) by narrowing an interval symbol by symbol. The coded width is the product of the symbol probabilities, so the bit cost reaches the entropy — and the decode line proves it round-trips.</> },
   "swim": { Component: SwimSection, title: <>SWIM failure detection</>, sub: <>How a cluster decides a node is dead without false alarms or all-to-all heartbeating. Cut the direct link but leave a helper up and the target stays alive (indirect ping-req); cut everything and it goes suspect, then dead — unless it refutes with a higher incarnation number.</> },
   "ahocorasick": { Component: AhoCorasickSection, title: <>Aho-Corasick multi-pattern matching</>, sub: <>Find every occurrence of many patterns in one pass. The automaton is a trie of the dictionary plus failure links; step through the text and watch the state follow a child edge when it can and jump a failure link when it can’t, lighting up matches as whole patterns complete — the engine behind fgrep and intrusion detection.</> },
+  "aesround": { Component: AesRoundSection, title: <>AES internals</>, sub: <>Step inside the block cipher — watch 10 rounds of SubBytes, ShiftRows, MixColumns and AddRoundKey transform the 4×4 state.</> },
+  "hashint": { Component: HashInternalsSection, title: <>SHA-256 internals</>, sub: <>A <strong>hash</strong> is a one-way fingerprint of data: feed SHA-256 any input — one letter or a whole movie — and it returns the same fixed <strong>256-bit</strong> string every time; flip a single input bit and the output looks entirely different; and you cannot run it backwards to recover the input. Those properties — deterministic, fixed-size, avalanche, irreversible, and <strong>collision-resistant</strong> (no two inputs should ever share a fingerprint) — are why hashes underpin passwords, digital signatures, and integrity checks. Below, watch <em>how</em> SHA-256 does it: pad and block the message, fold each block into the 256-bit state through 64 compression rounds, and see why the digest <em>is</em> that state — the quirk behind length-extension attacks.</> },
+  "certs": { Component: CertChainSection, title: <>Certificates &amp; PKI</>, sub: <>Walk the certificate chain leaf → root — and watch validation fail at the exact link you break.</> },
+  "icmp": { Component: IcmpSection, title: <>ICMP messages</>, sub: <>The internet's error and control messages — Echo, Time Exceeded, Destination Unreachable — with jumps to where each one appears.</> },
+  "dhmitm": { Component: DhMitmSection, title: <>DH man-in-the-middle</>, sub: <>Diffie–Hellman resists a passive eavesdropper but not an active one — watch Eve run DH with each side and relay, then authenticate the public values to catch her.</> },
 };

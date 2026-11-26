@@ -24,13 +24,8 @@ import { ByteView } from './ByteView';
 import { JourneyView } from './JourneyView';
 import { LifecycleView } from './LifecycleView';
 import { ChecksumView } from './ChecksumView';
-import { AesRoundSection } from './AesRoundSection';
-import { HashInternalsSection } from './HashInternalsSection';
 import { StoryView } from './StoryView';
-import { CertChainSection } from './CertChainSection';
-import { IcmpSection } from './IcmpSection';
-import { DhMitmSection } from './DhMitmSection';
-import { GROUPS, metaById, groupOf } from './sections';
+import { GROUPS, metaById, groupOf, pathOf, sectionFromPath, pageTitle } from './sections';
 import { OverviewSection } from './OverviewSection';
 import { JourneyBar } from './JourneyBar';
 import { pathById } from './paths';
@@ -38,6 +33,7 @@ import { CodePanel } from './CodePanel';
 import { CodeExamples } from './CodeExamples';
 import './style.css';
 
+const BASE = import.meta.env.BASE_URL; // '/' or '/apex/' (see vite.config.ts)
 const registry = new ProtocolRegistry();
 registerCoreProtocols(registry);
 
@@ -53,13 +49,29 @@ const TABS: { id: View; label: string }[] = [
 ];
 
 function App() {
-  const [section, setSection] = useState<Section>('overview'); // land on the map (journeys + filterable catalog), not a single section
+  // The URL names the section (`/tcphand/`); the bare base path is the overview map (journeys + filterable catalog).
+  const [section, setSection] = useState<Section>(() => sectionFromPath(location.pathname, BASE) as Section);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [navQuery, setNavQuery] = useState('');
   const [journeyId, setJourneyId] = useState<string | null>(null);
   const [dark, setDark] = useState<boolean>(() => typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-color-scheme: dark)').matches);
 
   useEffect(() => { initAnalytics(); }, []);                 // load configured provider beacons once
+  useEffect(() => {
+    // Keep the address bar and tab title on the open section. Normalizing the landing URL (e.g. a missing trailing
+    // slash) replaces rather than pushes, and keeps ?query so campaign tags survive until the beacons read them.
+    const p = pathOf(section, BASE);
+    if (location.pathname !== p) {
+      if (sectionFromPath(location.pathname, BASE) === section) history.replaceState(null, '', p + location.search);
+      else history.pushState(null, '', p);
+    }
+    document.title = pageTitle(section);
+  }, [section]);
+  useEffect(() => {
+    const onPop = () => setSection(sectionFromPath(location.pathname, BASE) as Section);
+    addEventListener('popstate', onPop);
+    return () => removeEventListener('popstate', onPop);
+  }, []);
   // per-section pageview + dwell time (how long each section is read); flush on tab hide / unload
   const dwellRef = useRef<{ id: string; at: number } | null>(null);
   useEffect(() => {
@@ -407,56 +419,6 @@ function App() {
         )}
 
         {SECTIONS[section] && <SectionHost id={section} onOpen={(id) => setSection(id as Section)} />}
-
-        {section === 'aesround' && (
-          <>
-            <header>
-              <h1>AES internals</h1>
-              <p className="sub">Step inside the block cipher — watch 10 rounds of SubBytes, ShiftRows, MixColumns and AddRoundKey transform the 4×4 state.</p>
-            </header>
-            <AesRoundSection onOpen={(id) => setSection(id as Section)} />
-          </>
-        )}
-
-        {section === 'hashint' && (
-          <>
-            <header>
-              <h1>SHA-256 internals</h1>
-              <p className="sub">A <strong>hash</strong> is a one-way fingerprint of data: feed SHA-256 any input — one letter or a whole movie — and it returns the same fixed <strong>256-bit</strong> string every time; flip a single input bit and the output looks entirely different; and you cannot run it backwards to recover the input. Those properties — deterministic, fixed-size, avalanche, irreversible, and <strong>collision-resistant</strong> (no two inputs should ever share a fingerprint) — are why hashes underpin passwords, digital signatures, and integrity checks. Below, watch <em>how</em> SHA-256 does it: pad and block the message, fold each block into the 256-bit state through 64 compression rounds, and see why the digest <em>is</em> that state — the quirk behind length-extension attacks.</p>
-            </header>
-            <HashInternalsSection onOpen={(id) => setSection(id as Section)} />
-          </>
-        )}
-
-        {section === 'certs' && (
-          <>
-            <header>
-              <h1>Certificates &amp; PKI</h1>
-              <p className="sub">Walk the certificate chain leaf → root — and watch validation fail at the exact link you break.</p>
-            </header>
-            <CertChainSection onOpen={(id) => setSection(id as Section)} />
-          </>
-        )}
-
-        {section === 'icmp' && (
-          <>
-            <header>
-              <h1>ICMP messages</h1>
-              <p className="sub">The internet's error and control messages — Echo, Time Exceeded, Destination Unreachable — with jumps to where each one appears.</p>
-            </header>
-            <IcmpSection onOpen={(id) => setSection(id as Section)} />
-          </>
-        )}
-
-        {section === 'dhmitm' && (
-          <>
-            <header>
-              <h1>DH man-in-the-middle</h1>
-              <p className="sub">Diffie–Hellman resists a passive eavesdropper but not an active one — watch Eve run DH with each side and relay, then authenticate the public values to catch her.</p>
-            </header>
-            <DhMitmSection onOpen={(id) => setSection(id as Section)} />
-          </>
-        )}
 
         {section !== 'overview' && <CodePanel id={section} />}
         {section !== 'overview' && <CodeExamples id={section} />}

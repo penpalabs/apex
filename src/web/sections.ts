@@ -506,6 +506,25 @@ export const SECTION_META: SectionMeta[] = [
 
 export const metaById: Record<string, SectionMeta> = Object.fromEntries(SECTION_META.map((m) => [m.id, m]));
 
+// Each section has its own URL (`<base><id>/`) so search engines can index it and links can point at it.
+// The build writes a static page per section at that path (scripts/prerender.ts); the app reads it back here.
+export const HOME_TITLE = 'Apex — see how computers actually work';
+
+export function pathOf(id: string, base: string): string {
+  return id === 'overview' ? base : `${base}${id}/`;
+}
+
+/** The section a URL path names, or 'overview' for the home page and any unknown path. */
+export function sectionFromPath(pathname: string, base: string): string {
+  const id = pathname.startsWith(base) ? pathname.slice(base.length).replace(/\/+$/, '') : '';
+  return metaById[id] ? id : 'overview';
+}
+
+export function pageTitle(id: string): string {
+  const m = metaById[id];
+  return m ? `${m.label} — interactive visualization | Apex` : HOME_TITLE;
+}
+
 export interface SectionGroup { label: string; icon: string; ids: string[] }
 
 export const GROUPS: SectionGroup[] = [
