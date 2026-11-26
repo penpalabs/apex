@@ -100,8 +100,16 @@ Each non-network section follows the same shape: a **pure, dependency-free model
 wiring in `main.tsx` (import, a `section` union member, and a render block — the one part that is still a large
 hand-maintained file). Models never import React, so they run in the CLI and the browser alike.
 
-**Stack:** TypeScript + React + Vite, tested with [vitest](https://vitest.dev) — a fully static, client-side
-app with no backend (the engine and crypto run in the browser). CI runs the full test suite on every push and PR; a deploy workflow publishes to GitHub Pages.
+**Stack:** TypeScript + React + Vite, tested with [vitest](https://vitest.dev). A client-side app with no
+server of its own: the engine and crypto run in the browser. CI runs the full test suite on every push and PR; a
+deploy workflow publishes to GitHub Pages, and Cloudflare Workers Builds deploys the same build from
+[`wrangler.jsonc`](wrangler.jsonc).
+
+**Analytics:** the public deploys load three cookieless beacons ([Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/),
+[GoatCounter](https://www.goatcounter.com), [Umami](https://umami.is)) that record page visits, which section is
+opened, a bucketed time-on-section, and whether the section was interacted with. Nothing you type is sent. They
+load only on the hostnames listed in [`src/web/analytics.ts`](src/web/analytics.ts), so local dev and forks send
+nothing.
 
 ## Contributing
 

@@ -69,7 +69,14 @@ function App() {
     trackSection(section);
   }, [section]);
   useEffect(() => {
-    const flush = () => { const c = dwellRef.current; if (c && document.visibilityState === 'hidden') { trackDwell(c.id, (Date.now() - c.at) / 1000); c.at = Date.now(); } };
+    // On hide: report the time read so far. On return: restart the clock, so time spent in another tab is not
+    // counted as reading when the next section switch reports dwell.
+    const flush = () => {
+      const c = dwellRef.current;
+      if (!c) return;
+      if (document.visibilityState === 'hidden') trackDwell(c.id, (Date.now() - c.at) / 1000);
+      c.at = Date.now();
+    };
     document.addEventListener('visibilitychange', flush);
     window.addEventListener('pagehide', flush);
     return () => { document.removeEventListener('visibilitychange', flush); window.removeEventListener('pagehide', flush); };
