@@ -109,7 +109,8 @@ deploy workflow publishes to GitHub Pages, and Cloudflare Workers Builds deploys
 [GoatCounter](https://www.goatcounter.com), [Umami](https://umami.is)) that record page visits, which section is
 opened, a bucketed time-on-section, and whether the section was interacted with. Nothing you type is sent. They
 load only on the hostnames listed in [`src/web/analytics.ts`](src/web/analytics.ts), so local dev and forks send
-nothing.
+nothing. Built pages carry a Content-Security-Policy that lets the browser contact only the site itself and those
+beacons, so a `.pcap` you load (parsed in the tab, never uploaded) has nowhere else to go.
 
 ## Contributing
 
