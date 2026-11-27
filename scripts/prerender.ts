@@ -18,7 +18,8 @@ const HOME_DESC =
   'distributed systems, databases, algorithms, hardware and OS internals. Build it, break it, watch it run.';
 
 const html = (n: ReactNode) => renderToStaticMarkup(createElement(Fragment, null, n));
-const stripTags = (h: string) => h.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim(); // entities stay escaped
+// entities stay escaped; the last replace drops any '<' or '>' a nested tag could leave behind
+const stripTags = (h: string) => h.replace(/<[^>]+>/g, '').replace(/[<>]/g, '').replace(/\s+/g, ' ').trim();
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 /** Clip to a search-snippet length on a word boundary (entities contain no spaces, so none is split). */
