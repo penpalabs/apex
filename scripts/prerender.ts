@@ -8,6 +8,7 @@ import { createElement, Fragment, type ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { SECTIONS } from '../src/web/sections/registry';
 import { GROUPS, SECTION_META, metaById, groupOf, pageTitle, HOME_TITLE } from '../src/web/sections';
+import { BEACON_ORIGINS } from '../src/web/analytics';
 
 // Canonical origin: GitHub Pages and Cloudflare serve the same build, and every copy points search engines here.
 const SITE = new URL(JSON.parse(readFileSync('package.json', 'utf8')).homepage).origin;
@@ -17,7 +18,10 @@ const HOME_DESC =
   'distributed systems, databases, algorithms, hardware and OS internals. Build it, break it, watch it run.';
 
 const html = (n: ReactNode) => renderToStaticMarkup(createElement(Fragment, null, n));
-const stripTags = (h: string) => h.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim(); // entities stay escaped
+// React escapes '<' in text, so every '<' opens a tag: keep what follows each '>'. Splitting (not a tag regex) means
+// no '<' survives even from nested markup. Entities stay escaped.
+const stripTags = (h: string) =>
+  h.split('<').map((p, i) => (i ? p.slice(p.indexOf('>') + 1) : p)).join('').replace(/\s+/g, ' ').trim();
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 /** Clip to a search-snippet length on a word boundary (entities contain no spaces, so none is split). */
@@ -27,6 +31,22 @@ function clip(s: string, max = 155): string {
   const sp = cut.lastIndexOf(' ');
   return (sp > 0 ? cut.slice(0, sp) : cut).replace(/[\s,;:—–-]+$/, '') + '…';
 }
+
+// The page may load from and send to only itself and the analytics beacons, so a loaded capture or anything typed has
+// nowhere else to go. 'unsafe-eval' is for the Playground, which evals the user's code in a blob: worker (a blob
+// worker inherits this policy, so its fetches are confined too). Goes right after <meta charset> so it governs the
+// module script that follows it.
+const CSP = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-eval' ${BEACON_ORIGINS.script.join(' ')}`,
+  "worker-src 'self' blob:",
+  `connect-src 'self' ${BEACON_ORIGINS.connect.join(' ')}`,
+  `img-src 'self' data: blob: ${BEACON_ORIGINS.img.join(' ')}`,
+  "style-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'none'",
+].join('; ');
 
 const template = readFileSync(`${DIST}/index.html`, 'utf8');
 
@@ -41,13 +61,14 @@ function page(o: { title: string; desc: string; url: string; body: string }): st
     `    <meta name="twitter:card" content="summary_large_image" />\n  </head>`;
   const out = template
     // function replacers: section text can contain '$', which a replacement string would treat as a pattern
+    .replace('<meta charset="UTF-8" />', (m) => `${m}\n    <meta http-equiv="Content-Security-Policy" content="${CSP}" />`)
     .replace(/<title>.*?<\/title>/, () => `<title>${esc(o.title)}</title>`)
     .replace(/(<meta name="description" content=")[^"]*/, (_, a) => a + o.desc)
     .replace(/(<meta property="og:title" content=")[^"]*/, (_, a) => a + esc(o.title))
     .replace(/(<meta property="og:description" content=")[^"]*/, (_, a) => a + o.desc)
     .replace('</head>', () => head)
     .replace('<div id="root"></div>', () => `<div id="root">${o.body}</div>`);
-  for (const must of [o.url, o.body]) if (!out.includes(must)) throw new Error(`template did not take ${o.url}`);
+  for (const must of [o.url, o.body, CSP]) if (!out.includes(must)) throw new Error(`template did not take ${o.url}`);
   return out;
 }
 

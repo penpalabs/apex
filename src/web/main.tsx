@@ -320,10 +320,11 @@ function App() {
                 <option value="">Examples: real captures…</option>
                 {EXAMPLES.map((e) => <option key={e.id} value={e.id}>{e.label}</option>)}
               </select>
-              <label className="pcap-load">
+              <label className="pcap-load" title="The file is read and parsed in this tab. It is never uploaded.">
                 ↥ Load .pcap / .pcapng
                 <input type="file" accept=".pcap,.pcapng,.cap,application/vnd.tcpdump.pcap" onChange={(e) => loadPcap(e.target.files?.[0])} />
               </label>
+              <span className="pcap-note">Parsed in your browser, never uploaded</span>
             </div>
 
             {pcapError && <p className="pcap-error">⚠ {pcapError}</p>}

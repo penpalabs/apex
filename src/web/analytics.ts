@@ -22,6 +22,17 @@ const CONFIG = {
   goatcounter: "https://apex.goatcounter.com/count", // GoatCounter count endpoint
   umamiWebsiteId: "978cf230-088c-4322-8827-5cffa2744f24", // Umami Cloud website id (public embed id)
   umamiSrc: "https://cloud.umami.is/script.js",
+  cloudflareSrc: "https://static.cloudflareinsights.com/beacon.min.js",
+  goatcounterSrc: "https://gc.zgo.at/count.js",
+};
+
+/** Where the beacons load from and where they send, for the Content-Security-Policy that scripts/prerender.ts puts
+ *  on every page; the browser blocks any other request. Cloudflare and Umami Cloud send to a different host than
+ *  they load from; GoatCounter sends with sendBeacon, falling back to an <img>. */
+export const BEACON_ORIGINS = {
+  script: [CONFIG.cloudflareSrc, CONFIG.goatcounterSrc, CONFIG.umamiSrc].map((u) => new URL(u).origin),
+  connect: ["https://cloudflareinsights.com", new URL(CONFIG.goatcounter).origin, "https://gateway.umami.is"],
+  img: [new URL(CONFIG.goatcounter).origin],
 };
 
 /** Whether beacons may load on this hostname. Exact match only: a fork's `someone.github.io` must not qualify. */
@@ -80,7 +91,7 @@ export function initAnalytics(): void {
   if (!isTrackedHost(window.location.hostname)) return;
   if (CONFIG.cloudflareToken)
     inject(
-      "https://static.cloudflareinsights.com/beacon.min.js",
+      CONFIG.cloudflareSrc,
       {
         "data-cf-beacon": JSON.stringify({
           token: CONFIG.cloudflareToken,
@@ -97,7 +108,7 @@ export function initAnalytics(): void {
     );
   if (CONFIG.goatcounter)
     inject(
-      "//gc.zgo.at/count.js",
+      CONFIG.goatcounterSrc,
       { "data-goatcounter": CONFIG.goatcounter },
       { async: true },
     );
