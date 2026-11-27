@@ -1,4 +1,5 @@
-// Renders any registry section: its header (title + sub) then its component. Replaces ~328 inline blocks in main.tsx.
+// Renders any registry section: its header (title + sub) at once, then its component once its chunk has loaded.
+import { Suspense } from 'react';
 import { SECTIONS } from './registry';
 
 export function SectionHost({ id, onOpen }: { id: string; onOpen?: (id: string) => void }) {
@@ -11,7 +12,9 @@ export function SectionHost({ id, onOpen }: { id: string; onOpen?: (id: string) 
         <h1>{e.title}</h1>
         <p className="sub">{e.sub}</p>
       </header>
-      <Component onOpen={onOpen} />
+      <Suspense fallback={<p className="sub">Loading…</p>}>
+        <Component onOpen={onOpen} />
+      </Suspense>
     </>
   );
 }
