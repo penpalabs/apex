@@ -17,4 +17,5 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run test:run
-      - run: npm run stats
+      - name: README counts match the code (fix with npm run stats:write)
+        run: npm run stats:write && git diff --exit-code -- README.md

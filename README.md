@@ -57,7 +57,7 @@ a **dark-mode** toggle.
 
 | Area | A taste of what's inside |
 |------|--------------------------|
-| 🌐 **Network basics** | Build a real Ethernet/IPv4/TCP frame from your text and follow it byte-by-byte; ARP, switching, NAT, DHCP, subnetting, the on-the-wire signal, 90+ protocols + `.pcap` import |
+| 🌐 **Network basics** | Build a real Ethernet/IPv4/TCP frame from your text and follow it byte-by-byte; ARP, switching, NAT, DHCP, subnetting, the on-the-wire signal, 98 protocols + `.pcap` import |
 | 🧭 **Routing & naming** | BGP best-path & route reflectors, OSPF, DNS, DNSSEC, **DNS cache poisoning (Kaminsky)**, MPLS, VXLAN, VRRP, ECMP, IPsec |
 | 🚀 **Transport & web** | TCP handshake & state machine, congestion control (CUBIC/BBR), QUIC vs TCP, **connection migration**, **0-RTT replay**, HTTP/2 & /3, **MPTCP**, WebSockets, CDNs |
 | 🔒 **Cryptography** | AES rounds, AEAD, Diffie–Hellman, RSA/ECC/EdDSA, Schnorr ZK, the double ratchet, VRFs, **Paillier homomorphic** encryption, **envelope encryption (KMS)**, Shamir/threshold, post-quantum |

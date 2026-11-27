@@ -11,6 +11,10 @@ const sectionsTs = readFileSync(join(root, 'src/web/sections.ts'), 'utf8');
 const sections = (sectionsTs.match(/^\s*\{ id: '/gm) || []).length;
 const groups = (sectionsTs.match(/label: '[^']+', icon: '[^']+', ids:/g) || []).length;
 
+// Protocols the frame builder registers: the entries of the `all` array in src/protocols/index.ts.
+const protocolsTs = readFileSync(join(root, 'src/protocols/index.ts'), 'utf8');
+const protocols = (protocolsTs.match(/const all = \[([\s\S]*?)\];/)?.[1].match(/\w+/g) || []).length;
+
 const testDir = join(root, 'tests');
 const testFiles = readdirSync(testDir).filter((f) => f.endsWith('.test.ts'));
 let testCases = 0;
@@ -25,9 +29,9 @@ const guidedStories = readdirSync(webDir)
   .filter((f) => f.endsWith('.tsx'))
   .filter((f) => /from '\.\/GuidedStory'/.test(readFileSync(join(webDir, f), 'utf8'))).length;
 
-const stats = { sections, groups, testFiles: testFiles.length, testCases, guidedStories };
+const stats = { sections, groups, protocols, testFiles: testFiles.length, testCases, guidedStories };
 console.log(JSON.stringify(stats, null, 2));
-console.log(`\n${sections} sections across ${groups} areas · ${testFiles.length} test files · ${testCases}+ test cases`);
+console.log(`\n${sections} sections across ${groups} areas · ${protocols} protocols · ${testFiles.length} test files · ${testCases}+ test cases`);
 console.log(`${guidedStories} of ${sections} sections have a narrated guided story (cinematic rollout in progress).`);
 console.log('For the exact passing count, run: npm run test:run  (CI runs the full suite on every push).');
 
@@ -39,17 +43,10 @@ if (process.argv.includes('--write')) {
   const after = before
     .replace(/sections-\d+-/g, `sections-${sections}-`) // the shields.io badge
     .replace(/\*\*\d+ interactive sections across \d+ areas\*\*/g, `**${sections} interactive sections across ${groups} areas**`)
-    .replace(/\*\*\d+ hands-on[^*]*visualizations\*\*/g, `**${sections} hands-on visualizations**`); // title tagline
-  if (after !== before) { writeFileSync(readmePath, after); console.log(`\nREADME.md regenerated → ${sections} sections, ${groups} areas.`); }
+    .replace(/\*\*\d+ hands-on[^*]*visualizations\*\*/g, `**${sections} hands-on visualizations**`) // title tagline
+    .replace(/\b\d+\+? protocols\b/g, `${protocols} protocols`);
+  if (after !== before) { writeFileSync(readmePath, after); console.log(`\nREADME.md regenerated → ${sections} sections, ${groups} areas, ${protocols} protocols.`); }
   else console.log('\nREADME.md already current.');
-  // index.html meta + package.json description carry the same count — keep them in lockstep so no two
-  // files ever disagree (rule 1: the same number must never appear with two different values).
-  for (const rel of ['index.html', 'package.json']) {
-    const p = join(root, rel);
-    const b = readFileSync(p, 'utf8');
-    const a = b.replace(/\b\d+( (?:live|tested)[^"]{0,50}?visualizations)/g, `${sections}$1`);
-    if (a !== b) { writeFileSync(p, a); console.log(`${rel} regenerated → ${sections}.`); }
-  }
 }
 
 export default stats;

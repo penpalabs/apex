@@ -13,9 +13,6 @@ import { BEACON_ORIGINS } from '../src/web/analytics';
 // Canonical origin: GitHub Pages and Cloudflare serve the same build, and every copy points search engines here.
 const SITE = new URL(JSON.parse(readFileSync('package.json', 'utf8')).homepage).origin;
 const DIST = 'dist';
-const HOME_DESC =
-  'Interactive, in-browser visualizations of how computers work — networking, cryptography, transport and the web, ' +
-  'distributed systems, databases, algorithms, hardware and OS internals. Build it, break it, watch it run.';
 
 const html = (n: ReactNode) => renderToStaticMarkup(createElement(Fragment, null, n));
 // React escapes '<' in text, so every '<' opens a tag: keep what follows each '>'. Splitting (not a tag regex) means
@@ -49,6 +46,8 @@ const CSP = [
 ].join('; ');
 
 const template = readFileSync(`${DIST}/index.html`, 'utf8');
+// The home page keeps index.html's own description (already HTML-escaped there), so the text lives in one place.
+const HOME_DESC = template.match(/<meta name="description" content="([^"]*)"/)![1];
 
 function page(o: { title: string; desc: string; url: string; body: string }): string {
   const head =
@@ -98,7 +97,7 @@ for (const { id, label } of SECTION_META) {
 const catalog = GROUPS.map((g) => `<h2>${esc(g.label)}</h2>${links(g.ids, '')}`).join('');
 writeFileSync(
   `${DIST}/index.html`,
-  page({ title: HOME_TITLE, desc: esc(HOME_DESC), url: `${SITE}/`, body: `<main><h1>Apex</h1><p class="sub">${esc(HOME_DESC)}</p>${noscript}${catalog}</main>` }),
+  page({ title: HOME_TITLE, desc: HOME_DESC, url: `${SITE}/`, body: `<main><h1>Apex</h1><p class="sub">${HOME_DESC}</p>${noscript}${catalog}</main>` }),
 );
 
 writeFileSync(
