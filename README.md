@@ -121,6 +121,27 @@ own output. Keep `src/core/` free of protocol-specific knowledge so the engine s
 [`docs/protocol-spec.md`](docs/protocol-spec.md) to add a protocol and
 [`docs/architecture.md`](docs/architecture.md) for the design.
 
+Read [CONTRIBUTING.md](.github/CONTRIBUTING.md) for setup, the checks a PR must pass, and how to add a section.
+
+- 🐛 **Found a bug, or a model that disagrees with the spec?** [Open an issue](https://github.com/penpalabs/apex/issues/new/choose).
+- 💡 **Want a topic covered?** [Request it](https://github.com/penpalabs/apex/issues/new/choose) or
+  [start a discussion](https://github.com/penpalabs/apex/discussions).
+- 💬 **Have a question?** Ask in [GitHub Discussions](https://github.com/penpalabs/apex/discussions).
+- 🔒 **Found a security issue?** Report it privately as described in [SECURITY.md](.github/SECURITY.md).
+- 🤝 **Code of conduct:** [CODE_OF_CONDUCT.md](.github/CODE_OF_CONDUCT.md).
+
+## Star history
+
+If Apex helped you understand something, a star helps other people find it.
+
+<a href="https://www.star-history.com/#penpalabs/apex&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=penpalabs/apex&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=penpalabs/apex&type=Date" />
+    <img alt="Star history chart for penpalabs/apex" src="https://api.star-history.com/svg?repos=penpalabs/apex&type=Date" />
+  </picture>
+</a>
+
 ## What it is — and isn't
 
 It builds and dissects real bytes, and runs real algorithms and crypto, **for teaching**. It is not a packet
