@@ -18,8 +18,10 @@ const HOME_DESC =
   'distributed systems, databases, algorithms, hardware and OS internals. Build it, break it, watch it run.';
 
 const html = (n: ReactNode) => renderToStaticMarkup(createElement(Fragment, null, n));
-// entities stay escaped; the last replace drops any '<' or '>' a nested tag could leave behind
-const stripTags = (h: string) => h.replace(/<[^>]+>/g, '').replace(/[<>]/g, '').replace(/\s+/g, ' ').trim();
+// React escapes '<' in text, so every '<' opens a tag: keep what follows each '>'. Splitting (not a tag regex) means
+// no '<' survives even from nested markup. Entities stay escaped.
+const stripTags = (h: string) =>
+  h.split('<').map((p, i) => (i ? p.slice(p.indexOf('>') + 1) : p)).join('').replace(/\s+/g, ' ').trim();
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 /** Clip to a search-snippet length on a word boundary (entities contain no spaces, so none is split). */
