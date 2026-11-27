@@ -8,23 +8,6 @@ import { SectionHost } from './sections/SectionHost';
 import { SECTIONS } from './sections/registry';
 import { createRoot } from 'react-dom/client';
 import { initAnalytics, trackSection, trackDwell, trackInteraction } from './analytics';
-import { ProtocolRegistry } from '../core/registry';
-import { registerCoreProtocols } from '../protocols';
-import { buildFrame } from '../core/builder';
-import { dissect } from '../core/engine';
-import { buildByteModel } from './byteModel';
-import { buildJourney, journeyFromTree } from './journeyModel';
-import { findHeaderChecksum } from './checksumWalk';
-import { findStateful } from './stateWalk';
-import { encodePayload, type Mode } from './payload';
-import { buildConnection, DEFAULT_FORM, type ConnForm, type FlagSet } from './connectionForm';
-import { EXAMPLES } from './examples';
-import { parseCapture, type Pcap } from './pcap';
-import { ByteView } from './ByteView';
-import { JourneyView } from './JourneyView';
-import { LifecycleView } from './LifecycleView';
-import { ChecksumView } from './ChecksumView';
-import { StoryView } from './StoryView';
 import { GROUPS, metaById, groupOf, pathOf, sectionFromPath, pageTitle } from './sections';
 import { OverviewSection } from './OverviewSection';
 import { JourneyBar } from './JourneyBar';
@@ -34,19 +17,8 @@ import { CodeExamples } from './CodeExamples';
 import './style.css';
 
 const BASE = import.meta.env.BASE_URL; // '/' or '/apex/' (see vite.config.ts)
-const registry = new ProtocolRegistry();
-registerCoreProtocols(registry);
 
 type Section = 'network' | 'crypto' | 'classical' | 'otpad' | 'aesround' | 'aead' | 'chacha' | 'hashint' | 'rsa' | 'ecc' | 'ecdsa' | 'schnorr' | 'dhmitm' | 'bb84' | 'ecbpenguin' | 'lamport' | 'quorum' | 'lz77' | 'cors' | 'tcphand' | 'dnssec' | 'paxos' | 'webinject' | 'dhkex' | 'crc32' | 'snowflake' | 'pmtud' | 'countmin' | 'sack' | 'bully' | 'csp' | 'eddsa' | 'hll' | 'ttlhop' | 'bdp' | 'webauthn' | 'anycast' | 'mailauth' | 'consistency' | 'reedsolomon' | 'cubic' | 'wpa' | 'bbr' | 'btree' | 'lsm' | 'mvcc' | 'wal' | 'skiplist' | 'pedersen' | 'locking' | 'trie' | 'pbft' | 'lzw' | 'hlc' | 'cuckoo' | 'geohash' | 'chord' | 'unionfind' | 'fenwick' | 'kmp' | 'rabinkarp' | 'hashtable' | 'editdist' | 'toposort' | 'astar' | 'heap' | 'sorting' | 'majority' | 'segtree' | 'avl' | 'reservoir' | 'dfa' | 'fencing' | 'hashchain' | 'happyeyeballs' | 'nagle' | 'chandy' | 'viterbi' | 'sctp' | 'pagereplace' | 'retry' | 'smuggle' | 'phiaccrual' | 'consttime' | 'conditional' | 'siteisolation' | 'vxlan' | 'sri' | 'antientropy' | 'vrrp' | 'truetime' | 'ecn' | 'dot1x' | 'ipsec' | 'causalbcast' | 'ecmp' | 'realtime' | 'x3dh' | 'tfo' | 'threshsig' | 'raftlog' | 'tlsdowngrade' | 'pwhash' | 'pqc' | 'shamir' | 'pow' | 'kerberos' | 'revocation' | 'ssh' | 'feistel' | 'poly1305' | 'hashbreak' | 'ratchet' | 'encoding' | 'huffman' | 'errors' | 'identity' | 'attacks' | 'routing' | 'dns' | 'subnet' | 'bgp' | 'congestion' | 'http2' | 'quic' | 'nat' | 'flow' | 'bufferbloat' | 'cookies' | 'certs' | 'traceroute' | 'dhcp' | 'switch' | 'stptree' | 'slaac' | 'linecode' | 'ratelimit' | 'chash' | 'lb' | 'bloom' | 'cdn' | 'qos' | 'merkle' | 'vclock' | 'crdt' | 'gossip' | 'raft' | 'cap' | 'replication' | 'twopc' | 'fragment' | 'bgphijack' | 'mpls' | 'natpunch' | 'ipcompare' | 'icmp' | 'arp' | 'csma' | 'multicast' | 'vlan' | 'ntp' | 'arq' | 'rto' | 'queueing' | 'distvec' | 'mdns' | 'encdns' | 'http3' | 'grpc' | 'websocket' | 'cpusched' | 'pagewalk' | 'mesi' | 'joins' | 'h2flow' | 'tso' | 'ospf' | 'maxflow' | 'ntt' | 'bwt' | 'taillatency' | 'mst' | 'cfs' | 'pipeline' | 'scc' | 'queryplan' | 'rum' | 'arith' | 'swim' | 'ahocorasick' | 'floyd' | 'leakybucket' | 'knapsack' | 'deployments' | 'healthcheck' | 'autoscale' | 'slo' | 'tracing' | 'featureflags' | 'gracefulshutdown' | 'idempotency' | 'loadshed' | 'chaos' | 'singleflight' | 'branchpredict' | 'boyermoore' | 'newton' | 'cow' | 'mtf' | 'tlb' | 'suffixarray' | 'fft' | 'ssrf' | 'saga' | 'blindsig' | 'clickjack' | 'bgprr' | 'vrf' | 'hsts' | 'numa' | 'ot' | 'bellmanford' | 'cdc' | 'watermark' | 'openredirect' | 'paillier' | 'manacher' | 'epoll' | 'varint' | 'hintedhandoff' | 'futex' | 'quicmig' | 'quickselect' | 'feldman' | 'chainrep' | 'iouring' | 'golombrice' | 'hashflood' | 'hdrhist' | 'aliasmethod' | 'bakery' | 'zerortt' | 'redos' | 'splaytree' | 'kaminsky' | 'threepc' | 'kdtree' | 'subdomain' | 'zalgo' | 'rcu' | 'lenext' | 'roaring' | 'priorityinv' | 'leases' | 'timewait' | 'paddingoracle' | 'bulkhead' | 'hamt' | 'shuffle' | 'optransform' | 'spectre' | 'jumphash' | 'cycledetect' | 'gorilla' | 'protopollute' | 'mptcp' | 'envelope' | 'falseshare' | 'intervaltree' | 'treap' | 'kadane' | 'readrepair' | 'dnsrebind' | 'cobs' | 'piecetable' | 'rendezvous' | 'buddyalloc' | 'timingwheel' | 'usl' | 'segrouting' | 'eliascode' | 'arpspoof' | 'sparsetable' | 'elgamal' | 'dnf' | 'sws' | 'ddsketch' | 'lamportsig' | 'minhash' | 'pid' | 'xxe' | 'aba' | 'bitmapindex' | 'rsync' | 'kademlia' | 'inode' | 'medianofmedians' | 'robinhood' | 'hmac' | 'routeflap' | 'seqlock' | 'cartesian' | 'jwt' | 'pairingheap' | 'base58' | 'lis' | 'gcra' | 'dram' | 'adder' | 'latch' | 'alu' | 'membus' | 'io' | 'ssd' | 'transistor' | 'gpu' | 'cpucache' | 'oooexec' | 'rope' | 'gapbuffer' | 'fastinvsqrt' | 'kahan' | 'karatsuba' | 'simanneal' | 'hamming' | 'bresenham' | 'convexhull' | 'marchsquares' | 'voronoi' | 'perlin' | 'poisson' | 'delaunay' | 'montgomery' | 'twosat' | 'playground' | 'overview';
-
-type View = 'story' | 'anatomy' | 'journey' | 'state' | 'checksum';
-const TABS: { id: View; label: string }[] = [
-  { id: 'story', label: 'Packet story' },
-  { id: 'anatomy', label: 'Byte anatomy' },
-  { id: 'journey', label: 'Journey' },
-  { id: 'state', label: 'Connection lifecycle' },
-  { id: 'checksum', label: 'Checksum' },
-];
 
 function App() {
   // The URL names the section (`/tcphand/`); the bare base path is the overview map (journeys + filterable catalog).
@@ -128,62 +100,6 @@ function App() {
     return allSections.filter((s) => s.label.toLowerCase().includes(q) || s.group.toLowerCase().includes(q)).slice(0, 10);
   }, [navQuery, allSections]);
   const gotoSection = (id: string) => { setSection(id as Section); setNavQuery(''); setOpenMenu(null); };
-  const [input, setInput] = useState('Hi');
-  const [mode, setMode] = useState<Mode>('text');
-  const [view, setView] = useState<View>('story');
-  const [exampleId, setExampleId] = useState<string | null>(null);
-  const [pcap, setPcap] = useState<Pcap | null>(null);
-  const [pcapIdx, setPcapIdx] = useState(0);
-  const [pcapError, setPcapError] = useState<string | null>(null);
-  const [form, setForm] = useState<ConnForm>(DEFAULT_FORM);
-
-  const { bytes: payload, error } = useMemo(() => encodePayload(input, mode), [input, mode]);
-  const { conn, errors: connErrors } = useMemo(() => buildConnection(form), [form]);
-
-  const builtIn = exampleId ? EXAMPLES.find((e) => e.id === exampleId) ?? null : null;
-  const pcapPkt = pcap
-    ? {
-        id: `pcap-${pcapIdx}`,
-        label: `pcap packet #${pcapIdx + 1}`,
-        startId: pcap.startId,
-        bytes: pcap.packets[pcapIdx].bytes,
-        note: `Captured frame ${pcapIdx + 1} of ${pcap.packets.length} (${pcap.packets[pcapIdx].bytes.length} bytes on the wire).`,
-      }
-    : null;
-  const capture = pcapPkt ?? builtIn;
-
-  const textTree = useMemo(() => {
-    const safe = payload.length ? payload : [0];
-    return dissect(buildFrame(safe, registry, conn).bytes, 'ethernet', registry);
-  }, [payload, conn]);
-  const activeTree = useMemo(
-    () => (capture ? dissect(capture.bytes, capture.startId, registry) : textTree),
-    [capture, textTree],
-  );
-  const anatomyModel = useMemo(() => buildByteModel(activeTree), [activeTree]);
-  const journey = useMemo(
-    () => (capture ? journeyFromTree(activeTree) : buildJourney(payload, registry, conn)),
-    [capture, activeTree, payload, conn],
-  );
-  const stateful = useMemo(() => findStateful(activeTree), [activeTree]);
-  const ckTarget = useMemo(() => findHeaderChecksum(activeTree), [activeTree]);
-
-  const pickExample = (id: string | null) => {
-    setExampleId(id);
-    if (id) { setPcap(null); setPcapError(null); setView('story'); }
-  };
-  const clearCapture = () => { setExampleId(null); setPcap(null); setPcapError(null); };
-  const loadPcap = async (file: File | undefined) => {
-    if (!file) return;
-    try {
-      const pc = parseCapture(await file.arrayBuffer());
-      setPcap(pc); setPcapIdx(0); setExampleId(null); setPcapError(null); setView('anatomy');
-    } catch (e) {
-      setPcap(null); setPcapError(e instanceof Error ? e.message : String(e));
-    }
-  };
-
-  const payloadHex = payload.map((b) => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
 
   return (
     <div className={`app ${activePath ? 'has-jbar' : ''}`}>
@@ -287,138 +203,6 @@ function App() {
           <OverviewSection onPick={(id) => setSection(id as Section)} onStartPath={startPath} current={section} />
         )}
 
-        {section === 'network' && (
-          <>
-            <header>
-              <h1>Network</h1>
-              <p className="sub">
-                Your computer never sends your message alone: it wraps it in nested <strong>envelopes</strong>, one per
-                layer — TCP for a reliable connection, IP for an address across the internet, Ethernet for the local wire —
-                each adding a header. Type a message and watch the envelopes get built byte by byte, cross the wire, and get
-                unwrapped at the far end — real frames, real checksums (or load a real protocol capture). Every network
-                attack, later, is a forged or tampered envelope somewhere in this stack.
-              </p>
-            </header>
-
-            <div className="controls">
-              <div className="mode">
-                <button className={mode === 'text' ? 'on' : ''} onClick={() => setMode('text')}>Text</button>
-                <button className={mode === 'number' ? 'on' : ''} onClick={() => setMode('number')}>Number</button>
-              </div>
-              <input className="msg" value={input} onChange={(e) => setInput(e.target.value)}
-                placeholder={mode === 'text' ? 'Type a message…' : 'Type an integer, e.g. 443 or -200'} spellCheck={false} />
-              <div className="payload-readout">
-                {error ? <span className="err">{error}</span> : (
-                  <>
-                    <span className="k">payload</span>
-                    <code>{payloadHex || '—'}</code>
-                    <span className="cnt">{payload.length} byte{payload.length === 1 ? '' : 's'}</span>
-                  </>
-                )}
-              </div>
-              <select className="examples" value={exampleId ?? ''} onChange={(e) => pickExample(e.target.value || null)}>
-                <option value="">Examples: real captures…</option>
-                {EXAMPLES.map((e) => <option key={e.id} value={e.id}>{e.label}</option>)}
-              </select>
-              <label className="pcap-load" title="The file is read and parsed in this tab. It is never uploaded.">
-                ↥ Load .pcap / .pcapng
-                <input type="file" accept=".pcap,.pcapng,.cap,application/vnd.tcpdump.pcap" onChange={(e) => loadPcap(e.target.files?.[0])} />
-              </label>
-              <span className="pcap-note">Parsed in your browser, never uploaded</span>
-            </div>
-
-            {pcapError && <p className="pcap-error">⚠ {pcapError}</p>}
-            {pcap && (
-              <div className="pcap-strip">
-                <span className="pcap-strip-label">{pcap.packets.length} packets · link type {pcap.linkType}</span>
-                <div className="pcap-packets">
-                  {pcap.packets.slice(0, 200).map((p) => (
-                    <button key={p.index} className={p.index === pcapIdx ? 'on' : ''}
-                      onClick={() => { setPcapIdx(p.index); setView('anatomy'); }}>
-                      #{p.index + 1} · {p.bytes.length}B
-                    </button>
-                  ))}
-                  {pcap.packets.length > 200 && <span className="pcap-more">+{pcap.packets.length - 200} more</span>}
-                </div>
-              </div>
-            )}
-
-            {!capture && (
-              <details className="advanced">
-                <summary>Advanced — edit the connection (rebuilds the frame live)</summary>
-                <div className="adv-grid">
-                  {([['srcIp', 'Source IP'], ['dstIp', 'Dest IP'], ['srcPort', 'Source port'], ['dstPort', 'Dest port'], ['ttl', 'TTL'], ['window', 'Window']] as [keyof ConnForm, string][]).map(([key, label]) => (
-                    <label key={key} className="adv-field">
-                      <span>{label}</span>
-                      <input className={connErrors[key] ? 'bad' : ''} value={form[key] as string}
-                        onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))} spellCheck={false} />
-                      {connErrors[key] && <em className="adv-err">{connErrors[key]}</em>}
-                    </label>
-                  ))}
-                  <div className="adv-flags">
-                    <span>TCP flags</span>
-                    <div className="adv-flagrow">
-                      {(['SYN', 'ACK', 'PSH', 'RST', 'FIN'] as (keyof FlagSet)[]).map((fl) => (
-                        <label key={fl}>
-                          <input type="checkbox" checked={form.flags[fl]}
-                            onChange={() => setForm((f) => ({ ...f, flags: { ...f.flags, [fl]: !f.flags[fl] } }))} />
-                          {fl}
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </details>
-            )}
-
-            <nav className="viewtabs">
-              {TABS.map((t) => (
-                <button key={t.id} className={view === t.id ? 'on' : ''} onClick={() => setView(t.id)}>{t.label}</button>
-              ))}
-            </nav>
-
-            {view === 'story' && (
-              <StoryView tree={activeTree} model={anatomyModel} journey={journey} built={!capture}
-                caption={capture ? `${capture.label} — ${capture.note}` : undefined} />
-            )}
-            {view === 'anatomy' && (
-              <>
-                {capture ? (
-                  <div className="example-banner">
-                    <span><strong>{capture.label}</strong> — {capture.note}</span>
-                    <button className="ghost" onClick={clearCapture}>✕ back to your message</button>
-                  </div>
-                ) : (
-                  <p className="insight">
-                    {mode === 'number'
-                      ? `As a number, "${input.trim() || '…'}" is packed big-endian into ${payload.length} byte${payload.length === 1 ? '' : 's'}${input.trim().startsWith('-') ? ' as two’s complement' : ''} — switch to Text to see the same characters become their ASCII codes instead.`
-                      : `As text, each character becomes its byte value (e.g. "443" → 34 34 33). Switch to Number to see 443 packed as 01 BB.`}
-                  </p>
-                )}
-                <ByteView model={anatomyModel} />
-              </>
-            )}
-            {view === 'journey' && <JourneyView journey={journey} message={!capture && mode === 'text' ? input : journey.recovered} />}
-            {view === 'state' && (
-              stateful ? (
-                <LifecycleView machine={stateful.machine} conversation={stateful.conversation} payloadLength={payload.length || 1} name={stateful.name} />
-              ) : (
-                <div className="journey">
-                  <section className="jsec">
-                    <h2>State machine</h2>
-                    <p className="jsec-sub">
-                      <strong>{activeTree.header.spec.name}</strong> is connectionless — there is no handshake or
-                      connection state machine to walk. (TCP, shown for the default text frame, is the
-                      connection-oriented contrast: it declares an 11-state machine and a 3-way handshake.)
-                    </p>
-                  </section>
-                </div>
-              )
-            )}
-            {view === 'checksum' && <ChecksumView target={ckTarget} />}
-          </>
-        )}
-
         {SECTIONS[section] && <SectionHost id={section} onOpen={(id) => setSection(id as Section)} />}
 
         {section !== 'overview' && <CodePanel id={section} />}
@@ -435,6 +219,17 @@ function App() {
     </div>
   );
 }
+
+// A tab opened before a deploy still asks for the previous build's section chunks, which the deploy removed. Reloading
+// fetches the new index; the URL already names the section, so the visitor lands where they were going. At most once
+// per 10 s, so a chunk that is missing for another reason fails once instead of reloading forever.
+window.addEventListener('vite:preloadError', () => {
+  try {
+    if (Date.now() - Number(sessionStorage.getItem('apex-reload')) < 10_000) return;
+    sessionStorage.setItem('apex-reload', String(Date.now()));
+  } catch { /* storage blocked: reload anyway */ }
+  location.reload();
+});
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
