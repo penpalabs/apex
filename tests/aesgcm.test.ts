@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { aesCtr, ctrBlock, aesGcmEncrypt, aesGcmDecrypt, gfmul, xorBytes } from '../src/web/aesgcm';
+import { aesCtr, ctrBlock, aesGcmEncrypt, aesGcmDecrypt, gfmul } from '../src/web/aesgcm';
+import { xorBytes } from '../src/web/bytes';
 
 const hex = (s: string) => Uint8Array.from(s.replace(/\s/g, '').match(/../g)!.map((b) => parseInt(b, 16)));
 const toHex = (b: Uint8Array) => [...b].map((x) => x.toString(16).padStart(2, '0')).join('');

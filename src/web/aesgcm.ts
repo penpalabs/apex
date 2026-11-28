@@ -9,10 +9,6 @@
 //     McGrew–Viega / NIST SP 800-38D GCM test vectors.
 import { expandKey128, encryptBlock } from './aes';
 
-const xorInto = (dst: Uint8Array, a: Uint8Array, b: Uint8Array, n: number) => {
-  for (let j = 0; j < n; j++) dst[j] = a[j] ^ b[j];
-};
-
 /** +1 over the full 128-bit counter, big-endian (NIST SP 800-38A CTR). */
 function incFull(ctr: Uint8Array) {
   for (let i = 15; i >= 0; i--) { ctr[i] = (ctr[i] + 1) & 0xff; if (ctr[i] !== 0) break; }
@@ -142,10 +138,3 @@ export function tagsEqual(a: Uint8Array, b: Uint8Array): boolean {
   return d === 0;
 }
 
-/** XOR two equal-length byte strings (used to show the keystream cancelling). */
-export function xorBytes(a: Uint8Array, b: Uint8Array): Uint8Array {
-  const n = Math.min(a.length, b.length);
-  const out = new Uint8Array(n);
-  xorInto(out, a, b, n);
-  return out;
-}

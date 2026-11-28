@@ -4,7 +4,8 @@
 // ciphertext — so it leaks nothing. The reuse panel shows the fatal flaw: one repeated
 // pad and C1⊕C2 = P1⊕P2. Real XOR (otpad.ts, tested).
 import { useMemo, useState } from 'react';
-import { otpEncrypt, keyFor, xorBytes } from './otpad';
+import { otpEncrypt, keyFor } from './otpad';
+import { xorBytes } from './bytes';
 
 const enc = (s: string) => new TextEncoder().encode(s);
 const hx = (b: number) => b.toString(16).padStart(2, '0');

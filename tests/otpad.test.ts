@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { xorBytes, otpEncrypt, keyFor } from '../src/web/otpad';
+import { otpEncrypt, keyFor } from '../src/web/otpad';
+import { xorBytes } from '../src/web/bytes';
 
 const enc = (s: string) => new TextEncoder().encode(s);
 const hex = (b: Uint8Array) => [...b].map((x) => x.toString(16).padStart(2, '0')).join('');

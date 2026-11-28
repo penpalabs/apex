@@ -14,3 +14,11 @@ export const concatBytes = (...arrs: Uint8Array[]): Uint8Array => {
   for (const a of arrs) { out.set(a, o); o += a.length; }
   return out;
 };
+
+/** XOR two byte arrays over their common length. */
+export const xorBytes = (a: Uint8Array, b: Uint8Array): Uint8Array => {
+  const n = Math.min(a.length, b.length);
+  const out = new Uint8Array(n);
+  for (let i = 0; i < n; i++) out[i] = a[i] ^ b[i];
+  return out;
+};
