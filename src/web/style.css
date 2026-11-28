@@ -4924,6 +4924,44 @@ i.hpot-dot{display:inline-block;vertical-align:middle;margin-right:4px}
 .rs-note{color:var(--muted)}
 .rs-foot{font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:14px}
 
+/* ── RAID 5 (Raid5Section) ── */
+.r5-controls{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin:10px 0 14px}
+.r5-controls label{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
+.r5-controls b{font-family:var(--mono);font-size:14px;color:var(--ink)}
+.r5-controls .rs-note{font-size:12.5px}
+.r5-controls input[type=range]{max-width:140px;accent-color:hsl(265 55% 55%)}
+.r5-controls input:not([type]),.r5-controls select{font-family:var(--mono);font-size:12.5px;padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:var(--soft);color:var(--ink)}
+.r5-text{flex:1 1 220px}
+.r5-text input{flex:1;min-width:0}
+.r5-ch{width:3em;text-align:center}
+.r5-scroll{overflow-x:auto;margin-bottom:8px}
+.r5-grid{border-collapse:separate;border-spacing:5px;font-size:12px}
+.r5-grid th{font-weight:500;color:var(--muted);font-size:11px}
+.r5-disk{display:flex;flex-direction:column;align-items:center;width:100%;min-width:64px;padding:5px 8px;font:inherit;font-size:12px;color:var(--ink);background:var(--subtle);border:1px solid var(--line);border-radius:8px;cursor:pointer}
+.r5-disk span{font-size:10px;color:var(--muted)}
+.r5-disk.down{background:hsl(0 65% 55% / .14);border-color:hsl(0 55% 58% / .5)}
+.r5-disk:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.r5-cell{text-align:center;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--soft)}
+.r5-cell.data{background:hsl(186 60% 55% / .14)}
+.r5-cell.parity{background:hsl(265 45% 55% / .14)}
+.r5-cell.rebuilt,.r5-key.rebuilt{border:1.5px dashed hsl(38 75% 50%)}
+.r5-cell.lost{background:hsl(0 65% 55% / .14);border-style:dashed}
+.r5-key{display:inline-block;width:15px;height:15px;border-radius:4px}
+.r5-val{display:block;font-family:var(--mono);font-size:14px;font-weight:700}
+.r5-tag{font-family:var(--mono);font-size:9.5px;color:var(--muted);white-space:pre}
+.r5-eqs{font-family:var(--mono);font-size:11.5px;color:var(--muted);line-height:1.7;margin-bottom:12px}
+.r5-eqs b{color:var(--ink)}
+.r5-ios{font-family:var(--mono);font-size:12px;line-height:1.8;padding-left:22px;margin-bottom:6px}
+.r5-ios li.read{color:hsl(186 55% 40%)}
+.r5-ios li.write{color:hsl(32 65% 42%)}
+[data-theme="dark"] .r5-ios li.read{color:hsl(186 60% 62%)}
+[data-theme="dark"] .r5-ios li.write{color:hsl(38 70% 62%)}
+.r5-load{display:flex;flex-direction:column;gap:6px;max-width:520px}
+.r5-bar-row{display:grid;grid-template-columns:56px 1fr 40px;align-items:center;gap:10px;font-size:12px;color:var(--muted)}
+.r5-bar-row b{font-family:var(--mono);color:var(--ink);text-align:right}
+.r5-bar{height:12px;background:var(--subtle);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.r5-bar i{display:block;height:100%;background:hsl(265 50% 58%)}
+
 /* ── TCP CUBIC (CubicSection) ── */
 .cub-chart{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:8px;margin:12px 0 8px;height:200px}
 .cub-chart svg{width:100%;height:100%}

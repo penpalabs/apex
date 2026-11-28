@@ -59,6 +59,7 @@ const LeasesSection = lazySection(() => import('../LeasesSection'), 'LeasesSecti
 const HashChainSection = lazySection(() => import('../HashChainSection'), 'HashChainSection');
 const HappyEyeballsSection = lazySection(() => import('../HappyEyeballsSection'), 'HappyEyeballsSection');
 const NagleSection = lazySection(() => import('../NagleSection'), 'NagleSection');
+const Raid5Section = lazySection(() => import('../Raid5Section'), 'Raid5Section');
 
 export const chunk1: Record<string, SectionEntry> = {
   "mvcc": { Component: MvccSection, title: <>MVCC &amp; snapshot isolation</>, sub: <>Why a SELECT never waits for an UPDATE. Step through two concurrent transactions and watch each write append a new row version while a long reader keeps seeing its own consistent snapshot.</> },
@@ -119,4 +120,5 @@ export const chunk1: Record<string, SectionEntry> = {
   "hashchain": { Component: HashChainSection, title: <>Hash chain</>, sub: <>The tamper-evidence trick behind blockchains, Git, and transparency logs. Each block stores the previous block's hash; edit any block's data and watch the mismatch cascade all the way to the tip.</> },
   "happyeyeballs": { Component: HappyEyeballsSection, title: <>Happy Eyeballs</>, sub: <>How a dual-stack client connects fast without stalling on a broken IPv6 path. Drag the IPv4/IPv6 connection times and watch the race — IPv6 preferred, IPv4 fallback racing in after a short delay.</> },
   "nagle": { Component: NagleSection, title: <>Nagle &amp; delayed ACK</>, sub: <>Two TCP optimizations that deadlock when they meet. Toggle Nagle and delayed ACK, drag the RTT and ACK timer, and watch the write-write-read stall appear as a red band on the ladder diagram — then vanish under TCP_NODELAY.</> },
+  "raid5": { Component: Raid5Section, title: <>RAID 5: striping, parity and rebuilding a failed disk</>, sub: <>Lose any one disk and lose no data: each stripe stores the XOR of its data chunks, so a missing chunk is the XOR of the rest. Type some text and watch it striped across the disks with parity rotating one disk per stripe, as Linux md lays it out. Click a disk to fail it and see every chunk recomputed from the survivors; fail a second and the data is gone. Then write one chunk to see the read-modify-write it costs, and compare how RAID 4&apos;s fixed parity disk takes every parity write.</> },
 };

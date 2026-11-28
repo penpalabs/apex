@@ -6,12 +6,7 @@
 // random, secret, and used exactly ONCE. Reuse it and C1⊕C2 = P1⊕P2 — the same
 // nonce-reuse trap as CTR/GCM and ECDSA. Pure XOR; tested.
 
-export const xorBytes = (a: Uint8Array, b: Uint8Array): Uint8Array => {
-  const n = Math.min(a.length, b.length);
-  const out = new Uint8Array(n);
-  for (let i = 0; i < n; i++) out[i] = a[i] ^ b[i];
-  return out;
-};
+import { xorBytes } from './bytes';
 
 /** Encrypt == decrypt: ciphertext = plaintext ⊕ key. The OTP requires a key AT LEAST as long as the
  *  message; xorBytes covers only the overlap, so a shorter key encrypts just a prefix (never do that). */

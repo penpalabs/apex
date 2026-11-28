@@ -7,7 +7,8 @@
 //     byte. Flip a ciphertext byte and watch verification reject it.
 // Everything here is computed by the NIST-verified aesgcm.ts on sandbox values.
 import { useMemo, useState } from 'react';
-import { aesCtr, ctrBlock, aesGcmEncrypt, aesGcmDecrypt, xorBytes } from './aesgcm';
+import { aesCtr, ctrBlock, aesGcmEncrypt, aesGcmDecrypt } from './aesgcm';
+import { xorBytes } from './bytes';
 
 const KEY = Uint8Array.from('2b7e151628aed2a6abf7158809cf4f3c'.match(/../g)!.map((b) => parseInt(b, 16)));
 const NONCE = Uint8Array.from('cafebabefacedbaddecaf888'.match(/../g)!.map((b) => parseInt(b, 16)));
