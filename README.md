@@ -128,6 +128,7 @@ Read [CONTRIBUTING.md](.github/CONTRIBUTING.md) for setup, the checks a PR must 
 - 💬 **Have a question?** Ask in [GitHub Discussions](https://github.com/penpalabs/apex/discussions).
 - 🔒 **Found a security issue?** Report it privately as described in [SECURITY.md](.github/SECURITY.md).
 - 🤝 **Code of conduct:** [CODE_OF_CONDUCT.md](.github/CODE_OF_CONDUCT.md).
+- ☕ **Want to support the work?** [Buy me a momo](https://buymemomo.com/pen-pal).
 
 ## Star history
 
