@@ -4,7 +4,7 @@
 
 ### See how computers *actually* work — live, in your browser
 
-**497 hands-on visualizations** you can poke, drag, and break — spanning networking,
+**498 hands-on visualizations** you can poke, drag, and break — spanning networking,
 cryptography, transport & the web, distributed systems, databases, algorithms, hardware, and OS internals.
 Not static diagrams you have to synchronize in your head. Real bytes, real checksums, real crypto.
 <br><sub>(Counts are measured, not asserted — run <code>npm run stats</code>; CI runs the full suite on every push.)</sub>
@@ -14,7 +14,7 @@ Not static diagrams you have to synchronize in your head. Real bytes, real check
 [![Live demo](https://img.shields.io/badge/▶_Live_demo-apex.manishkhadka.info.np-2563eb?style=for-the-badge)](https://apex.manishkhadka.info.np)
 
 [![tests](https://github.com/penpalabs/apex/actions/workflows/test.yml/badge.svg)](https://github.com/penpalabs/apex/actions/workflows/test.yml)
-[![Sections](https://img.shields.io/badge/sections-497-8250df?style=flat-square)](#whats-inside)
+[![Sections](https://img.shields.io/badge/sections-498-8250df?style=flat-square)](#whats-inside)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](#license)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?style=flat-square&logo=typescript&logoColor=white)](#)
 [![React](https://img.shields.io/badge/React-149eca?style=flat-square&logo=react&logoColor=white)](#)
@@ -51,7 +51,7 @@ no faked outputs.
 
 ## What's inside
 
-**497 interactive sections across 12 areas** — plus **guided journeys** (curated end-to-end walks like
+**498 interactive sections across 12 areas** — plus **guided journeys** (curated end-to-end walks like
 *"How an HTTPS page loads"*, *"Inside the CPU"*, *"Build a database"*) and a global filterable catalog with
 a **dark-mode** toggle.
 
