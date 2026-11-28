@@ -13,7 +13,7 @@ Not static diagrams you have to synchronize in your head. Real bytes, real check
 
 [![Live demo](https://img.shields.io/badge/▶_Live_demo-apex.manishkhadka.info.np-2563eb?style=for-the-badge)](https://apex.manishkhadka.info.np)
 
-[![tests](https://github.com/pen-pal/apex/actions/workflows/test.yml/badge.svg)](https://github.com/pen-pal/apex/actions/workflows/test.yml)
+[![tests](https://github.com/penpalabs/apex/actions/workflows/test.yml/badge.svg)](https://github.com/penpalabs/apex/actions/workflows/test.yml)
 [![Sections](https://img.shields.io/badge/sections-497-8250df?style=flat-square)](#whats-inside)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](#license)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?style=flat-square&logo=typescript&logoColor=white)](#)
@@ -96,9 +96,8 @@ docs/            architecture.md · protocol-spec.md · views.md
 ```
 
 Each non-network section follows the same shape: a **pure, dependency-free model** in `src/web/<topic>.ts`
-(with `tests/<topic>.test.ts` — anchored to a reference where one exists), a **view** in `src/web/<Topic>Section.tsx`, and a few lines of
-wiring in `main.tsx` (import, a `section` union member, and a render block — the one part that is still a large
-hand-maintained file). Models never import React, so they run in the CLI and the browser alike.
+(with `tests/<topic>.test.ts` — anchored to a reference where one exists), a **view** in `src/web/<Topic>Section.tsx`, and one row in a
+`src/web/sections/chunk*.tsx` registry file, which loads the view's code when the section is first opened. Models never import React, so they run in the CLI and the browser alike.
 
 **Stack:** TypeScript + React + Vite, tested with [vitest](https://vitest.dev). A client-side app with no
 server of its own: the engine and crypto run in the browser. CI runs the full test suite on every push and PR; a
