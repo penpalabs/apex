@@ -1,6 +1,7 @@
 /// <reference types="vitest" />
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { specRefs } from './scripts/spec-refs';
 
 // Base path differs by host:
 //  • GitHub Pages serves the build under /apex/ (project page), so assets must be /apex/…
@@ -13,6 +14,8 @@ const buildBase = process.env.APEX_BASE ?? (atRoot ? '/' : '/apex/');
 export default defineConfig(({ command }) => ({
   base: command === 'build' ? buildBase : '/',
   plugins: [react()],
+  // The specs each section's code cites, read from the source at build time (see scripts/spec-refs.ts).
+  define: { __SPEC_REFS__: JSON.stringify(specRefs()) },
   test: {
     // core/protocol tests are pure logic and need no DOM; view tests can opt into jsdom per-file
     environment: 'node',

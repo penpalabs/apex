@@ -1,8 +1,8 @@
 // Post-build: give every section its own indexable page. The app is a single-page app, so without this a search
 // engine sees one URL for every topic. For each section this writes dist/<id>/index.html — the built index.html
-// with that section's title, description, canonical URL and Open Graph tags, and its heading, summary and links to
-// related sections as static HTML inside #root (createRoot replaces it when the app mounts, and the app reads the
-// section back from the path), JSON-LD for search engines, and a link-preview image naming the section (og/<id>.png).
+// with that section's title, description, canonical URL and Open Graph tags, and its heading, summary, the specs its
+// code cites and links to related sections as static HTML inside #root (createRoot replaces it when the app mounts,
+// and the app reads the section back from the path), JSON-LD for search engines, and a link-preview image naming the section (og/<id>.png).
 // Also writes sitemap.xml and robots.txt. Run after `vite build` (see package.json).
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { createElement, Fragment, type ReactNode } from 'react';
@@ -11,6 +11,7 @@ import { SECTIONS } from '../src/web/sections/registry';
 import { GROUPS, SECTION_META, metaById, groupOf, pageTitle, HOME_TITLE } from '../src/web/sections';
 import { BEACON_ORIGINS } from '../src/web/analytics';
 import { ogImage } from './og-image';
+import { specRefs } from './spec-refs';
 
 // Canonical origin: GitHub Pages and Cloudflare serve the same build, and every copy points search engines here.
 const SITE = new URL(JSON.parse(readFileSync('package.json', 'utf8')).homepage).origin;
@@ -87,6 +88,9 @@ const urls = [`${SITE}/`];
 const titles = new Set<string>();
 const noscript = '<noscript><p>The simulations need JavaScript.</p></noscript>';
 const HOST = new URL(SITE).host;
+const SPECS = specRefs();
+// Same list SectionHost renders, so the page a crawler reads matches the one the app shows.
+const specList = (id: string) => SPECS[id] ? `<h2>Specs cited in this section's code</h2><ul>${SPECS[id].map((r) => `<li><a href="${r.url}">${esc(r.name)}</a></li>`).join('')}</ul>` : '';
 mkdirSync(`${DIST}/og`, { recursive: true });
 
 for (const { id, label } of SECTION_META) {
@@ -98,7 +102,7 @@ for (const { id, label } of SECTION_META) {
   const siblings = GROUPS.find((g) => g.label === group)!.ids.filter((x) => x !== id);
   const body =
     `<main><p><a href="../">Apex</a> › ${esc(group)}</p><h1>${titleHtml}</h1><p class="sub">${subHtml}</p>${noscript}` +
-    `<h2>More in ${esc(group)}</h2>${links(siblings, '../')}</main>`;
+    `${specList(id)}<h2>More in ${esc(group)}</h2>${links(siblings, '../')}</main>`;
   mkdirSync(`${DIST}/${id}`, { recursive: true });
   const image = { url: `${SITE}/og/${id}.png`, width: 1200, height: 630 };
   const ld = {

@@ -30,6 +30,9 @@ h1{font-size:28px;font-weight:650;letter-spacing:-.02em}
 .content header h1{font-family:var(--serif);font-weight:600;font-size:30px;letter-spacing:-.01em;display:flex;align-items:center;gap:22px}
 .content header h1::after{content:"";flex:1 1 40px;height:1px;background:var(--line)}
 .sub{color:var(--muted);margin:6px 0 18px;max-width:70ch}
+.spec-refs{margin-top:28px;border-top:1px solid var(--line);padding-top:12px;font-size:13px;color:var(--muted)}
+.spec-refs h2{font-size:13px;margin:0 0 6px}
+.spec-refs ul{display:flex;flex-wrap:wrap;gap:6px 16px;list-style:none;margin:0;padding:0}
 
 /* controls */
 .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;
